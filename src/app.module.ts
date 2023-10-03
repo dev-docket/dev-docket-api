@@ -5,11 +5,10 @@ import { UserController } from './user/user.controller';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { JwtModule } from './jwt/jwt.module';
-import { ProjectsController } from './projects/projects.controller';
 import { ProjectsModule } from './projects/projects.module';
 import { ProjectMembersController } from './project-members/project-members.controller';
 import { ProjectMembersService } from './project-members/project-members.service';
-import { ProjectsService } from './projects/projects.service';
+import { TeamsController } from './teams/teams.controller';
 
 @Module({
   imports: [JwtModule, ProjectsModule],
@@ -17,9 +16,9 @@ import { ProjectsService } from './projects/projects.service';
     AppController,
     UserController,
     AuthController,
-    ProjectsController,
     ProjectMembersController,
+    TeamsController,
   ],
-  providers: [AppService, AuthService, ProjectMembersService, ProjectsService],
+  providers: [AppService, AuthService, ProjectMembersService],
 })
 export class AppModule {}
