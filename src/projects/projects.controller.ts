@@ -1,12 +1,20 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
+import Project from './project.model';
+import { ApiOkResponse } from '@nestjs/swagger';
 
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Get('users/:userId')
-  async getUserProjects(@Param('userId', new ParseIntPipe()) userId: number) {
+  @ApiOkResponse({
+    description: 'The projects have been successfully returned.',
+    type: [Project],
+  })
+  async getUserProjects(
+    @Param('userId', new ParseIntPipe()) userId: number,
+  ): Promise<Project[]> {
     return await this.projectsService.getUserProjects(userId);
   }
 
