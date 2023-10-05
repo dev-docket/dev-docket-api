@@ -8,16 +8,15 @@ import { JwtModule } from './jwt/jwt.module';
 import { ProjectsModule } from './projects/projects.module';
 import { ProjectMembersController } from './project-members/project-members.controller';
 import { ProjectMembersService } from './project-members/project-members.service';
-import { TeamsController } from './teams/teams.controller';
+import { TeamsModule } from './teams/teams.module';
 
 @Module({
-  imports: [JwtModule, ProjectsModule],
+  imports: [JwtModule, ProjectsModule, TeamsModule],
   controllers: [
     AppController,
     UserController,
     AuthController,
     ProjectMembersController,
-    TeamsController,
   ],
   providers: [AppService, AuthService, ProjectMembersService],
 })
