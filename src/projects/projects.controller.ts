@@ -1,9 +1,10 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import Project from './project.model';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('projects')
+@ApiTags('Projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
