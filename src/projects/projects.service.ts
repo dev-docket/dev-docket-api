@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import ProjectMember from 'src/project-members/project-member.model';
 import Project from './project.model';
 import { Op } from 'sequelize';
-import { Team } from 'src/teams/team.model';
+import Team from 'src/teams/team.model';
 import { CreateProjectDto } from './dto/create-project.dto';
 import slugify from 'slugify';
 import { nanoid } from 'nanoid';

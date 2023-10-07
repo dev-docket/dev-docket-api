@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../db/database';
 
-export class Team extends Model {
+class Team extends Model {
   id: number;
   name: string;
   projectId: number;
@@ -33,3 +33,5 @@ Team.init(
     timestamps: false,
   },
 );
+
+export default Team;

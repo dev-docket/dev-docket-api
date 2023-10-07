@@ -9,6 +9,8 @@ import { ProjectsModule } from './projects/projects.module';
 import { TeamsModule } from './teams/teams.module';
 import { ProjectMembersModule } from './project-members/project-members.module';
 import { TeamMembersModule } from './team-members/team-members.module';
+import { TasksModule } from './tasks/tasks.module';
+import { AssignedUsersModule } from './assigned-user/assigned-users.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { TeamMembersModule } from './team-members/team-members.module';
     TeamsModule,
     ProjectMembersModule,
     TeamMembersModule,
+    TasksModule,
+    AssignedUsersModule,
   ],
   controllers: [AppController, UserController, AuthController],
   providers: [AppService, AuthService],

@@ -4,7 +4,7 @@ import {
   Logger,
   BadRequestException,
 } from '@nestjs/common';
-import { Team } from './team.model';
+import Team from './team.model';
 
 @Injectable()
 export class TeamsService {

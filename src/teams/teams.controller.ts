@@ -13,7 +13,7 @@ import { TeamsService } from './teams.service';
 import { ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { GetTeamResponse } from './dto/get-team-response.dto';
 import { TeamMembersService } from 'src/team-members/team-members.service';
-import { Team } from './team.model';
+import Team from './team.model';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { ProjectsService } from 'src/projects/projects.service';
 
