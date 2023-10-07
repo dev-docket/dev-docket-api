@@ -1,12 +1,24 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import Project from './project.model';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { CreateProjectDto } from './dto/create-project.dto';
+import { ProjectMembersService } from 'src/project-members/project-members.service';
 
 @Controller('projects')
 @ApiTags('Projects')
 export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) {}
+  constructor(
+    private readonly projectsService: ProjectsService,
+    private readonly projectMembersService: ProjectMembersService,
+  ) {}
 
   @Get('users/:userId')
   @ApiOkResponse({
@@ -22,5 +34,15 @@ export class ProjectsController {
   @Get(':projectSlug/teams')
   async getProjectTeams(@Param('projectSlug') projectSlug: string) {
     return await this.projectsService.getProjectTeams(projectSlug);
+  }
+
+  @Post()
+  async createProject(@Body() createProjectDto: CreateProjectDto) {
+    const project = await this.projectsService.createProject(createProjectDto);
+    await this.projectMembersService.createProjectMember(
+      createProjectDto.user.id,
+      project.id,
+      'owner',
+    );
   }
 }

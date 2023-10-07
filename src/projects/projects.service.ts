@@ -3,6 +3,9 @@ import ProjectMember from 'src/project-members/project-member.model';
 import Project from './project.model';
 import { Op } from 'sequelize';
 import { Team } from 'src/teams/team.model';
+import { CreateProjectDto } from './dto/create-project.dto';
+import slugify from 'slugify';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class ProjectsService {
@@ -61,6 +64,21 @@ export class ProjectsService {
       return teamsInProject;
     } catch (error) {
       this.logger.error('Error getting project teams', error.stack);
+    }
+  }
+
+  async createProject(createProjectDto: CreateProjectDto) {
+    try {
+      const { user: userDto, project: projectDto } = createProjectDto;
+
+      const project = await Project.create({
+        name: userDto.id,
+        slug: `${slugify(projectDto.name)}-${nanoid(4)}`,
+      });
+
+      return project;
+    } catch (error) {
+      this.logger.error('Error creating project', error.stack);
     }
   }
 }
