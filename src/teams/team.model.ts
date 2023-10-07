@@ -20,6 +20,10 @@ Team.init(
     projectId: {
       type: DataTypes.INTEGER,
       field: 'project_id',
+      references: {
+        model: 'project',
+        key: 'id',
+      },
     },
   },
   {

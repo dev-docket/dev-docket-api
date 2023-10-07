@@ -67,6 +67,25 @@ export class ProjectsService {
     }
   }
 
+  async getProjectId(projectSlug: string) {
+    try {
+      const project = await Project.findOne({
+        where: {
+          slug: projectSlug,
+        },
+        attributes: ['id'],
+      });
+
+      if (!project) {
+        return { error: 'Project not found' };
+      }
+
+      return project.id;
+    } catch (error) {
+      this.logger.error('Error getting project id', error.stack);
+    }
+  }
+
   async createProject(createProjectDto: CreateProjectDto) {
     try {
       const { user: userDto, project: projectDto } = createProjectDto;

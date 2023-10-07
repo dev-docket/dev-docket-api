@@ -39,4 +39,21 @@ export class TeamsService {
       throw error;
     }
   }
+
+  async createTeam(teamName, projectId): Promise<Team> {
+    try {
+      const team = await Team.create({
+        name: teamName,
+        projectId: projectId,
+      });
+
+      return team;
+    } catch (error) {
+      this.logger.error(
+        `Failed to create team with name: ${name}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
 }
