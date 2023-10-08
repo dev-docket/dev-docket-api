@@ -6,7 +6,6 @@ import rateLimit from 'express-rate-limit';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
 
   const options = new DocumentBuilder()
     .setTitle('API title')
@@ -22,6 +21,14 @@ async function bootstrap() {
   });
 
   app.use(limiter);
+
+  app.useGlobalPipes(new ValidationPipe());
+
+  app.enableCors({
+    origin: 'http://127.0.0.1:5173', // adjust this to match the domain you are calling from
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
 
   await app.listen(3000);
 }
