@@ -11,6 +11,20 @@ import { nanoid } from 'nanoid';
 export class ProjectsService {
   private readonly logger = new Logger(ProjectsService.name);
 
+  async getProject(projectSlug: string) {
+    try {
+      const project = await Project.findOne({
+        where: {
+          slug: projectSlug,
+        },
+      });
+
+      return project;
+    } catch (error) {
+      this.logger.error('Error getting project', error.stack);
+    }
+  }
+
   async getUserProjects(userId: number) {
     try {
       const projectMembers = await ProjectMember.findAll({
