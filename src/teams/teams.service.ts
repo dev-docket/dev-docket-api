@@ -5,6 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import Team from './team.model';
+import Task from 'src/tasks/task.model';
 
 @Injectable()
 export class TeamsService {
@@ -36,6 +37,19 @@ export class TeamsService {
       return team;
     } catch (error) {
       this.logger.error(`Failed to get team with ID: ${teamId}`, error.stack);
+      throw error;
+    }
+  }
+
+  async getTasksInTeams(teamId: number) {
+    try {
+      return await Task.findAll({
+        where: {
+          teamId: teamId,
+        },
+      });
+    } catch (error) {
+      this.logger.error(`Failed to get tasks in team with ID: ${teamId}`);
       throw error;
     }
   }
