@@ -22,7 +22,7 @@ import { ProjectsService } from 'src/projects/projects.service';
 export class TeamsController {
   constructor(
     private readonly teamsService: TeamsService,
-    private readonly teamMembersSerice: TeamMembersService,
+    private readonly teamMembersService: TeamMembersService,
     private readonly projectsService: ProjectsService,
   ) {}
 
@@ -90,7 +90,7 @@ export class TeamsController {
         createTeamDto.name,
         projectId,
       );
-      await this.teamMembersSerice.create(
+      await this.teamMembersService.create(
         createTeamDto.ownerId,
         createdTeam.id,
       );
