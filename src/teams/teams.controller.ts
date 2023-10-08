@@ -17,7 +17,7 @@ import Team from './team.model';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { ProjectsService } from 'src/projects/projects.service';
 
-@Controller('teams')
+@Controller('api/v1/teams')
 @ApiTags('Teams')
 export class TeamsController {
   constructor(
@@ -43,6 +43,21 @@ export class TeamsController {
   ): Promise<GetTeamResponse> {
     try {
       return await this.teamsService.getTeam(teamId, field);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error.response || 'Internal Server Error',
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get(':teamId/tasks')
+  async getTasksInTeams(@Param('teamId', new ParseIntPipe()) teamId: number) {
+    try {
+      return await this.teamsService.getTasksInTeams(teamId);
     } catch (error) {
       throw new HttpException(
         {
