@@ -1,19 +1,17 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ProjectMembersService } from './project-members.service';
+import { GetAllMembersResponseDto } from './dto/get-all-members-response.dto';
 
-@Controller('projects/:projectSlug/members')
+@Controller('api/v1/projects')
 export class ProjectMembersController {
   constructor(private readonly projectMembersService: ProjectMembersService) {}
 
-  // @Get()
-  // getAllMembers(@Param('projectSlug') projectSlug: string) {
-  //   return this.projectMembersService.getAllMembers(projectSlug);
-  // }
-
-  // @Get('invites')
-  // getAllInvitations(@Param('projectSlug') projectSlug: string) {
-  //   return this.projectMembersService.getAllInvitations(projectSlug);
-  // }
+  @Get(':projectSlug/members')
+  async getAllMembers(
+    @Param('projectSlug') projectSlug: string,
+  ): Promise<GetAllMembersResponseDto[]> {
+    return await this.projectMembersService.getAllMembers(projectSlug);
+  }
 
   // @Post('invites')
   // generateInvitation(

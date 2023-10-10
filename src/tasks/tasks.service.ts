@@ -4,6 +4,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { Transaction } from 'sequelize';
 import sequelize from 'src/db/database';
 import Team from 'src/teams/team.model';
+import { UpdateTaskPartialDto } from './dto/update-task-partial.dto';
 
 @Injectable()
 export class TasksService {
@@ -50,6 +51,36 @@ export class TasksService {
         },
         { transaction },
       );
+    } catch (error) {
+      this.logger.error(error);
+    }
+  }
+
+  async updateTaskPartial(
+    taskId: number,
+    updateTaskDto: UpdateTaskPartialDto,
+    transaction: Transaction,
+  ): Promise<Task> {
+    try {
+      const task = await Task.findByPk(taskId);
+      if (!task) {
+        throw new HttpException(
+          'The task does not exist',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const definedFields = Object.keys(updateTaskDto)
+        .filter((key) => updateTaskDto[key] !== undefined)
+        .reduce((obj, key) => {
+          obj[key] = updateTaskDto[key];
+          return obj;
+        }, {} as Partial<UpdateTaskPartialDto>);
+      // delete definedFields.id; // Remove id field as it should not be updated
+
+      console.log(definedFields);
+
+      return await task.update(definedFields, { transaction });
     } catch (error) {
       this.logger.error(error);
     }

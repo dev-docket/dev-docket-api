@@ -11,6 +11,7 @@ import { ProjectMembersModule } from './project-members/project-members.module';
 import { TeamMembersModule } from './team-members/team-members.module';
 import { TasksModule } from './tasks/tasks.module';
 import { AssignedUsersModule } from './assigned-user/assigned-users.module';
+import { ProjectInvitationsModule } from './project-invitations/project-invitations.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AssignedUsersModule } from './assigned-user/assigned-users.module';
     TeamMembersModule,
     TasksModule,
     AssignedUsersModule,
+    ProjectInvitationsModule,
   ],
   controllers: [AppController, UserController, AuthController],
   providers: [AppService, AuthService],
