@@ -7,7 +7,7 @@ export class CreateTaskDto {
   name: string;
 
   @ApiProperty()
-  @IsIn(['OPEN', 'IN_PROGRESS', 'DONE'])
+  @IsIn(['TODO', 'IN_PROGRESS', 'DONE'])
   status: string;
 
   @ApiProperty()
