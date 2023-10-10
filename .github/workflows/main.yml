@@ -1,8 +1,8 @@
 name: Delete Environment (default settings)
 on:
-pull_request:
-  types:
-    - closed
+  pull_request:
+    types:
+      - closed
     
 jobs:
   delete:
