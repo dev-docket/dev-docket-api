@@ -14,7 +14,7 @@ import { ProjectMembersService } from 'src/project-members/project-members.servi
 
 @Controller('api/v1/projects')
 @ApiTags('Projects')
-export class ProjectsController {
+export class Projects {
   constructor(
     private readonly projectsService: ProjectsService,
     private readonly projectMembersService: ProjectMembersService,
