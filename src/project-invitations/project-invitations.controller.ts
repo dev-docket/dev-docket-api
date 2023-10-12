@@ -11,4 +11,15 @@ export class ProjectInvitations {
   async getInvitations(@Param('projectSlug') projectSlug: string) {
     return await this.projectInvitationsService.getInvitations(projectSlug);
   }
+
+  @Get(':projectSlug/invitations/:invitationToken')
+  async getInvitation(
+    @Param('projectSlug') projectSlug: string,
+    @Param('invitationToken') invitationToken: string,
+  ) {
+    return await this.projectInvitationsService.getInvitation(
+      projectSlug,
+      invitationToken,
+    );
+  }
 }
