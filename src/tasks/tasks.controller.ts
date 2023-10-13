@@ -89,14 +89,14 @@ export class TasksController {
   ) {
     const transaction: Transaction = await this.tasksService.startTransaction();
     try {
-      await this.tasksService.updateTaskPartial(
+      const updatedTask = await this.tasksService.updateTaskPartial(
         taskId,
         updateTaskPartialDto,
         transaction,
       );
 
       await transaction.commit();
-      return { message: 'Task updated successfully' };
+      return updatedTask;
     } catch (error) {
       await transaction.rollback();
 
