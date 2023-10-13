@@ -81,7 +81,7 @@ export class ProjectsService {
     }
   }
 
-  async getProjectId(projectSlug: string) {
+  async getProjectId(projectSlug: string): Promise<number | { error: string }> {
     try {
       const project = await Project.findOne({
         where: {
