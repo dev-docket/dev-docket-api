@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import rateLimit from 'express-rate-limit';
-import { Request, Response, NextFunction } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,18 +25,13 @@ async function bootstrap() {
 
   app.use(limiter);
 
-  app.useGlobalPipes(new ValidationPipe());
-
-  // app.enableCors({
-  //   origin: ['https://dev-docket.vercel.app/', 'http://127.0.0.1:5173'], // adjust this to match the domain you are calling from
-  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  //   credentials: true,
-  // });
-
-  app.use((request: Request, response: Response, next: NextFunction) => {
-    response.setHeader('Access-Control-Allow-Origin', '*');
-    next();
+  app.enableCors({
+    origin: ['https://dev-docket.vercel.app/', 'http://127.0.0.1:5173'], // adjust this to match the domain you are calling from
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
   });
+
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(3000);
 }
