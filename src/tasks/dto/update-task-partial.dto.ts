@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn } from 'class-validator';
+// import { IsIn } from 'class-validator';
 
 export class UpdateTaskPartialDto {
   @ApiProperty()
@@ -9,7 +9,7 @@ export class UpdateTaskPartialDto {
   public name?: string;
 
   @ApiProperty()
-  @IsIn(['TODO', 'IN_PROGRESS', 'DONE'])
+  // @IsIn(['TODO', 'IN_PROGRESS', 'DONE'])
   public status?: string;
 
   @ApiProperty()
