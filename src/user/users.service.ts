@@ -10,4 +10,19 @@ export class UsersService {
       },
     });
   }
+
+  async getUserByEmail(email: string) {
+    try {
+      return await User.findOne({
+        where: {
+          email,
+        },
+        attributes: {
+          exclude: ['password'],
+        },
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
 }
