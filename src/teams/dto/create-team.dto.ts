@@ -8,7 +8,7 @@ export class CreateTeamDto {
 
   @ApiProperty()
   @IsNumber()
-  ownerId: number;
+  userId: number;
 
   @ApiProperty()
   @IsString()

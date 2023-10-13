@@ -6,10 +6,20 @@ import {
 } from '@nestjs/common';
 import Team from './team.model';
 import Task from 'src/tasks/task.model';
+import sequelize from 'src/db/database';
+import { ProjectsService } from 'src/projects/projects.service';
+import { CreateTeamDto } from './dto/create-team.dto';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class TeamsService {
   private readonly logger = new Logger(TeamsService.name);
+
+  constructor(private readonly projectsService: ProjectsService) {}
+
+  async startTransaction() {
+    return await sequelize.transaction();
+  }
 
   async checkFieldExists(field: string) {
     if (!Object.keys(Team.getAttributes()).includes(field)) {
@@ -54,12 +64,28 @@ export class TeamsService {
     }
   }
 
-  async createTeam(teamName, projectId): Promise<Team> {
+  async createTeam(
+    createTeam: CreateTeamDto,
+    transaction: Transaction,
+  ): Promise<Team> {
     try {
-      const team = await Team.create({
-        name: teamName,
-        projectId: projectId,
-      });
+      const projectId = await this.projectsService.getProjectId(
+        createTeam.projectSlug,
+      );
+
+      if (typeof projectId === 'object' && 'error' in projectId) {
+        throw new BadRequestException(projectId.error);
+      }
+
+      const team = await Team.create(
+        {
+          name: createTeam.name,
+          projectId: projectId,
+        },
+        {
+          transaction,
+        },
+      );
 
       return team;
     } catch (error) {
