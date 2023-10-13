@@ -17,7 +17,7 @@ async function bootstrap() {
 
   const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 100, // limit każdego IP do 100 zapytań na okno czasowe
+    max: 1000, // limit każdego IP do 100 zapytań na okno czasowe
   });
 
   app.use(limiter);
