@@ -7,9 +7,6 @@ import rateLimit from 'express-rate-limit';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const httpServer = app.getHttpServer();
-  httpServer.set('trust proxy', 1);
-
   const options = new DocumentBuilder()
     .setTitle('API title')
     .setDescription('API description')
@@ -20,7 +17,10 @@ async function bootstrap() {
 
   const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 1000, // limit każdego IP do 100 zapytań na okno czasowe
+    max: 1000, // limit each IP to 100 requests per window
+    keyGenerator: function (req) {
+      return req.connection.remoteAddress; // use the remote address as the key
+    },
   });
 
   app.use(limiter);
