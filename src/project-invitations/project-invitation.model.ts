@@ -57,7 +57,7 @@ ProjectInvitation.init(
     tableName: 'project_invitations',
     modelName: 'ProjectInvitation',
     sequelize,
-    timestamps: true,
+    timestamps: false,
   },
 );
 

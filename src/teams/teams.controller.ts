@@ -15,7 +15,6 @@ import { GetTeamResponse } from './dto/get-team-response.dto';
 import { TeamMembersService } from 'src/team-members/team-members.service';
 import Team from './team.model';
 import { CreateTeamDto } from './dto/create-team.dto';
-import { ProjectsService } from 'src/projects/projects.service';
 
 @Controller('api/v1/teams')
 @ApiTags('Teams')
@@ -23,7 +22,6 @@ export class TeamsController {
   constructor(
     private readonly teamsService: TeamsService,
     private readonly teamMembersService: TeamMembersService,
-    private readonly projectsService: ProjectsService,
   ) {}
 
   @Get(':teamId')
@@ -71,31 +69,22 @@ export class TeamsController {
 
   @Post()
   async createTeam(@Body() createTeamDto: CreateTeamDto): Promise<Team> {
+    const transaction = await this.teamsService.startTransaction();
     try {
-      const projectId = await this.projectsService.getProjectId(
-        createTeamDto.projectSlug,
-      );
-
-      if (typeof projectId === 'object' && 'error' in projectId) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            error: projectId.error,
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
       const createdTeam = await this.teamsService.createTeam(
-        createTeamDto.name,
-        projectId,
+        createTeamDto,
+        transaction,
       );
       await this.teamMembersService.create(
-        createTeamDto.ownerId,
+        createTeamDto.userId,
         createdTeam.id,
+        transaction,
       );
+
+      transaction.commit();
       return createdTeam;
     } catch (error) {
+      transaction.rollback();
       throw new HttpException(
         {
           status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,

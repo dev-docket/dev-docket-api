@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserController } from './user/user.controller';
+import { UsersController } from './user/users.controller';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { JwtModule } from './jwt/jwt.module';
@@ -24,7 +24,7 @@ import { ProjectInvitationsModule } from './project-invitations/project-invitati
     AssignedUsersModule,
     ProjectInvitationsModule,
   ],
-  controllers: [AppController, UserController, AuthController],
+  controllers: [AppController, UsersController, AuthController],
   providers: [AppService, AuthService],
 })
 export class AppModule {}

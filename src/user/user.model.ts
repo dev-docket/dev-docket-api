@@ -1,10 +1,13 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db/database';
+import { Exclude } from 'class-transformer';
 
 class User extends Model {
   public id!: number;
   public email!: string;
-  public password!: string;
+
+  @Exclude()
+  password!: string;
 }
 
 User.init(
@@ -25,6 +28,7 @@ User.init(
   },
   {
     tableName: 'users',
+    modelName: 'User',
     sequelize,
     timestamps: false,
   },

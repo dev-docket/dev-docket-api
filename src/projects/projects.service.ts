@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import ProjectMember from 'src/project-members/project-member.model';
 import Project from './project.model';
-import { Op } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
 import Team from 'src/teams/team.model';
 import { CreateProjectDto } from './dto/create-project.dto';
 import slugify from 'slugify';
@@ -10,6 +10,10 @@ import { nanoid } from 'nanoid';
 @Injectable()
 export class ProjectsService {
   private readonly logger = new Logger(ProjectsService.name);
+
+  async startTransaction() {
+    return await Project.sequelize.transaction();
+  }
 
   async getProject(projectSlug: string) {
     try {
@@ -81,7 +85,7 @@ export class ProjectsService {
     }
   }
 
-  async getProjectId(projectSlug: string) {
+  async getProjectId(projectSlug: string): Promise<number | { error: string }> {
     try {
       const project = await Project.findOne({
         where: {
@@ -100,18 +104,40 @@ export class ProjectsService {
     }
   }
 
-  async createProject(createProjectDto: CreateProjectDto) {
+  async createProject(
+    createProjectDto: CreateProjectDto,
+    transaction: Transaction,
+  ) {
     try {
       const { user: userDto, project: projectDto } = createProjectDto;
 
-      const project = await Project.create({
-        name: userDto.id,
-        slug: `${slugify(projectDto.name)}-${nanoid(4)}`,
-      });
+      const project = await Project.create(
+        {
+          name: userDto.id,
+          slug: `${slugify(projectDto.name)}-${nanoid(4)}`,
+        },
+        { transaction },
+      );
 
       return project;
     } catch (error) {
       this.logger.error('Error creating project', error.stack);
+    }
+  }
+
+  async deleteProject(projectSlug: string, transaction: Transaction) {
+    try {
+      const project = await this.getProject(projectSlug);
+
+      await ProjectMember.destroy({
+        where: {
+          projectId: project.id,
+        },
+        transaction,
+      });
+      // await project.destroy({ transaction });
+    } catch (error) {
+      this.logger.error('Error deleting project', error.stack);
     }
   }
 }
