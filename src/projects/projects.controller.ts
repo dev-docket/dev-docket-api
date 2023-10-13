@@ -55,5 +55,7 @@ export class Projects {
       project.id,
       'owner',
     );
+
+    return project;
   }
 }
