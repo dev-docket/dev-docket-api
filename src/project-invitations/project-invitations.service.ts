@@ -1,12 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import ProjectInvitation from './project-invitation.model';
 import { ProjectsService } from 'src/projects/projects.service';
 import { UsersService } from 'src/user/users.service';
+import { CreateInvitationDto } from './dto/create-invitation.dto';
+import { nanoid } from 'nanoid';
+import { ProjectMembersService } from 'src/project-members/project-members.service';
 
 @Injectable()
 export class ProjectInvitationsService {
+  private readonly logger = new Logger(ProjectInvitationsService.name);
+
   constructor(
     private readonly projectsService: ProjectsService,
+    private readonly projectMembersService: ProjectMembersService,
     private readonly usersSerivce: UsersService,
   ) {}
 
@@ -53,5 +59,104 @@ export class ProjectInvitationsService {
       project,
       user,
     };
+  }
+
+  async isUserAlreadyInvited(projectId: number, userId: number) {
+    const projectInvitation = await ProjectInvitation.findOne({
+      where: {
+        projectId,
+        userId,
+      },
+    });
+
+    return !!projectInvitation;
+  }
+
+  async createInvitation(
+    projectSlug: string,
+    createInvitationDto: CreateInvitationDto,
+  ) {
+    try {
+      const token = nanoid(16);
+      const expiration = Date.now() + 1000 * 60 * 60 * 24 * 7; // 7 days
+
+      const project = await this.projectsService.getProject(projectSlug);
+
+      const user = await this.usersSerivce.getUserByEmail(
+        createInvitationDto.email,
+      );
+
+      if (user) {
+        const isUserAlreadyInvited = await this.isUserAlreadyInvited(
+          project.id,
+          user.id,
+        );
+
+        if (isUserAlreadyInvited) {
+          throw new Error('User is already invited to this project');
+        }
+      }
+
+      const isUserAlreadyMember =
+        await this.projectMembersService.isUserAlreadyMember(
+          project.id,
+          user.id,
+        );
+
+      if (isUserAlreadyMember) {
+        throw new Error('User is already a member of this project');
+      }
+
+      const projectInvitation = await ProjectInvitation.create({
+        creatorId: createInvitationDto.creatorId,
+        userId: user.id,
+        projectId: project.id,
+        token,
+        expiry: expiration,
+      });
+
+      return {
+        ...projectInvitation.toJSON(),
+        project,
+        user,
+      };
+    } catch (error) {
+      this.logger.error('Error creating invitation', error.stack);
+    }
+  }
+
+  async acceptInvitation(projectSlug: string, invitationToken: string) {
+    try {
+      const project = await this.projectsService.getProject(projectSlug);
+      const projectInvitation = await ProjectInvitation.findOne({
+        where: {
+          projectId: project.id,
+          token: invitationToken,
+        },
+      });
+      const user = await this.usersSerivce.getUserById(
+        projectInvitation.userId,
+      );
+      const isUserAlreadyMember =
+        await this.projectMembersService.isUserAlreadyMember(
+          project.id,
+          user.id,
+        );
+      if (isUserAlreadyMember) {
+        throw new Error('User is already a member of this project');
+      }
+      await this.projectMembersService.createProjectMember(
+        user.id,
+        project.id,
+        'member',
+      );
+      await projectInvitation.destroy();
+      return {
+        message: 'Invitation accepted',
+      };
+    } catch (error) {
+      this.logger.error('Error accepting invitation', error.stack);
+      throw new Error(error);
+    }
   }
 }

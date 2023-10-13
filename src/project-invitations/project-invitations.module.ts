@@ -3,10 +3,16 @@ import { ProjectInvitations } from './project-invitations.controller';
 import { ProjectsService } from 'src/projects/projects.service';
 import { ProjectInvitationsService } from './project-invitations.service';
 import { UsersService } from 'src/user/users.service';
+import { ProjectMembersService } from 'src/project-members/project-members.service';
 
 @Module({
   controllers: [ProjectInvitations],
-  providers: [ProjectInvitationsService, ProjectsService, UsersService],
+  providers: [
+    ProjectInvitationsService,
+    ProjectsService,
+    ProjectMembersService,
+    UsersService,
+  ],
   exports: [ProjectInvitationsService],
 })
 export class ProjectInvitationsModule {}
