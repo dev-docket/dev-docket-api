@@ -7,6 +7,9 @@ import rateLimit from 'express-rate-limit';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const httpServer = app.getHttpServer();
+  httpServer.set('trust proxy', 1);
+
   const options = new DocumentBuilder()
     .setTitle('API title')
     .setDescription('API description')
