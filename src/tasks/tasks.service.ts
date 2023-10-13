@@ -85,4 +85,13 @@ export class TasksService {
       this.logger.error(error);
     }
   }
+
+  async deleteTask(taskId: number, transaction: Transaction) {
+    try {
+      await Task.destroy({ where: { id: taskId }, transaction });
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error(error);
+    }
+  }
 }

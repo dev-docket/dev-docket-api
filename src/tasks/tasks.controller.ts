@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -8,6 +9,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Res,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import Task from './task.model';
@@ -17,6 +19,7 @@ import { Transaction } from 'sequelize';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { AssignedUsersService } from 'src/assigned-user/assigned-users.service';
 import { UpdateTaskPartialDto } from './dto/update-task-partial.dto';
+import { Response } from 'express';
 
 @Controller('api/v1/tasks')
 @ApiTags('tasks')
@@ -99,6 +102,32 @@ export class TasksController {
       return updatedTask;
     } catch (error) {
       await transaction.rollback();
+
+      throw new HttpException(
+        {
+          status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error.response || 'Internal Server Error',
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Delete(':taskId')
+  async deleteTask(
+    @Param('taskId', new ParseIntPipe()) taskId: number,
+    @Res() res: Response,
+  ) {
+    const transaction: Transaction = await this.tasksService.startTransaction();
+    try {
+      await this.assignedUsersService.deleteAssignedUsers(taskId, transaction);
+      await this.tasksService.deleteTask(taskId, transaction);
+
+      await transaction.commit();
+
+      res.status(HttpStatus.NO_CONTENT).send();
+    } catch (error) {
+      if (transaction) await transaction.rollback();
 
       throw new HttpException(
         {

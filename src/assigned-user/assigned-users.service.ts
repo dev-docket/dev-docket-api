@@ -11,4 +11,12 @@ export class AssignedUsersService {
   ): Promise<AssignedUser> {
     return AssignedUser.create({ ...assignUserDto }, { transaction });
   }
+
+  async deleteAssignedUsers(taskId: number, transaction: Transaction) {
+    try {
+      await AssignedUser.destroy({ where: { taskId }, transaction });
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
 }
