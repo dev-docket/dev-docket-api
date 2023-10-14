@@ -28,8 +28,13 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   app.enableCors({
+<<<<<<< Updated upstream
     origin: ['https://dev-docket.vercel.app/', 'http://127.0.0.1:5173'], // adjust this to match the domain you are calling from
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+=======
+    origin: ['https://dev-docket.vercel.app', 'http://127.0.0.1:5173'], // adjust this to match the domain you are calling from
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+>>>>>>> Stashed changes
     credentials: true,
   });
 
