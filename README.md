@@ -6,7 +6,7 @@ This is a REST API for a Dev Docket application. Application allows developers t
 
 ## Live
 
-Here you can see online api with docs: https://jittery-gold-overalls.cyclic.cloud/api/v1/api-docs
+Here you can see online api with docs: https://glorious-mite-leg-warmers.cyclic.app/api
 
 ## Documentation
 
