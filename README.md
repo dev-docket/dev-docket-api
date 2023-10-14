@@ -1,3 +1,19 @@
+# Dev Docket API
+
+## Description
+
+This is a REST API for a Dev Docket application. Application allows developers to manage their projects and tasks.
+
+## Live
+
+Here you can see online api with docs: https://glorious-mite-leg-warmers.cyclic.app/api
+
+## Documentation
+
+https://dev-docket.gitbook.io/product-docs/
+
+Here you will find the documentation of the project. It is currently under construction. There you will find tools, libraries, models and analyses. This will tell you what I used in my project and why I chose it.
+
 ## Installation
 
 ```bash

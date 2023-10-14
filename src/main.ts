@@ -25,13 +25,13 @@ async function bootstrap() {
 
   app.use(limiter);
 
-  app.useGlobalPipes(new ValidationPipe());
-
   app.enableCors({
     origin: ['https://dev-docket.vercel.app/', 'http://127.0.0.1:5173'], // adjust this to match the domain you are calling from
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
+
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(3000);
 }
