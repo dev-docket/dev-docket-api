@@ -107,13 +107,13 @@ export class ProjectsService {
   async createProject(
     createProjectDto: CreateProjectDto,
     transaction: Transaction,
-  ) {
+  ): Promise<Project> {
     try {
-      const { user: userDto, project: projectDto } = createProjectDto;
+      const { project: projectDto } = createProjectDto;
 
       const project = await Project.create(
         {
-          name: userDto.id,
+          name: projectDto.name,
           slug: `${slugify(projectDto.name)}-${nanoid(4)}`,
         },
         { transaction },
