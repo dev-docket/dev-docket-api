@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import ProjectMember from './project-member.model';
 import { ProjectsService } from 'src/projects/projects.service';
 import User from 'src/user/user.model';
-import { Op } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
 import { GetAllMembersResponseDto } from './dto/get-all-members-response.dto';
 
 @Injectable()
@@ -54,16 +54,37 @@ export class ProjectMembersService {
     return !!projectMember;
   }
 
-  async createProjectMember(
-    userId: number,
-    projectId: number,
-    role: 'owner' | 'member',
-  ) {
-    await ProjectMember.create({
-      userId,
-      projectId,
-      role,
+  async createProjectMember({
+    userId,
+    projectId,
+    role,
+    transaction,
+  }: {
+    userId: number;
+    projectId: number;
+    role: string;
+    transaction: Transaction;
+  }) {
+    const user = await User.findOne({
+      where: {
+        id: userId,
+      },
     });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    await ProjectMember.create(
+      {
+        userId,
+        projectId,
+        role,
+      },
+      {
+        transaction,
+      },
+    );
   }
 
   async removeMember(projectSlug: string, userId: number) {

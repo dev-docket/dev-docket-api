@@ -3,6 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
+  Logger,
   Param,
   ParseIntPipe,
   Post,
@@ -18,6 +21,8 @@ import { Response } from 'express';
 @Controller('api/v1/projects')
 @ApiTags('Projects')
 export class Projects {
+  private readonly logger = new Logger(Projects.name);
+
   constructor(
     private readonly projectsService: ProjectsService,
     private readonly projectMembersService: ProjectMembersService,
@@ -52,22 +57,33 @@ export class Projects {
 
   @Post()
   async createProject(@Body() createProjectDto: CreateProjectDto) {
-    const transaction = await this.projectsService.startTransaction();
+    const transaction = await Project.sequelize.transaction();
     try {
       const project = await this.projectsService.createProject(
         createProjectDto,
         transaction,
       );
 
-      await this.projectMembersService.createProjectMember(
-        createProjectDto.user.id,
-        project.id,
-        'owner',
-      );
+      await this.projectMembersService.createProjectMember({
+        userId: createProjectDto.user.id,
+        projectId: project.id,
+        role: 'owner',
+        transaction,
+      });
 
+      transaction.commit();
       return project;
     } catch (error) {
+      this.logger.error('Error creating project', error.stack);
+
       await transaction.rollback();
+      throw new HttpException(
+        {
+          status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error.response || 'Internal Server Error',
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
