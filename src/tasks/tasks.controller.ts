@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Res,
+  Logger,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import Task from './task.model';
@@ -24,6 +25,8 @@ import { Response } from 'express';
 @Controller('api/v1/tasks')
 @ApiTags('tasks')
 export class TasksController {
+  private readonly logger = new Logger(TasksController.name);
+
   constructor(
     private readonly tasksService: TasksService,
     private readonly assignedUsersService: AssignedUsersService,
@@ -73,6 +76,8 @@ export class TasksController {
       await transaction.commit();
       return task;
     } catch (error) {
+      this.logger.error(error);
+
       await transaction.rollback();
 
       throw new HttpException(
