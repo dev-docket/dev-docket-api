@@ -78,7 +78,7 @@ export class TasksService {
         }, {} as Partial<UpdateTaskPartialDto>);
       // delete definedFields.id; // Remove id field as it should not be updated
 
-      console.log(definedFields);
+      // console.log(definedFields);
 
       return await task.update(definedFields, { transaction });
     } catch (error) {
