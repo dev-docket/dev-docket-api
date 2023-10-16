@@ -11,8 +11,10 @@ import {
 import { ProjectInvitationsService } from './project-invitations.service';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { Response } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('api/v1/projects')
+@ApiTags('Projects Invitations')
 export class ProjectInvitations {
   constructor(
     private readonly projectInvitationsService: ProjectInvitationsService,

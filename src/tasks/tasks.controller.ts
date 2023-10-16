@@ -23,7 +23,7 @@ import { UpdateTaskPartialDto } from './dto/update-task-partial.dto';
 import { Response } from 'express';
 
 @Controller('api/v1/tasks')
-@ApiTags('tasks')
+@ApiTags('Tasks')
 export class TasksController {
   private readonly logger = new Logger(TasksController.name);
 
