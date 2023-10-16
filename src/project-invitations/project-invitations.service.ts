@@ -126,6 +126,7 @@ export class ProjectInvitationsService {
   }
 
   async acceptInvitation(projectSlug: string, invitationToken: string) {
+    const transaction = await ProjectInvitation.sequelize.transaction();
     try {
       const project = await this.projectsService.getProject(projectSlug);
       const projectInvitation = await ProjectInvitation.findOne({
@@ -145,16 +146,20 @@ export class ProjectInvitationsService {
       if (isUserAlreadyMember) {
         throw new Error('User is already a member of this project');
       }
-      await this.projectMembersService.createProjectMember(
-        user.id,
-        project.id,
-        'member',
-      );
+      await this.projectMembersService.createProjectMember({
+        userId: user.id,
+        projectId: project.id,
+        role: 'member',
+        transaction,
+      });
       await projectInvitation.destroy();
+
+      await transaction.commit();
       return {
         message: 'Invitation accepted',
       };
     } catch (error) {
+      await transaction.rollback();
       this.logger.error('Error accepting invitation', error.stack);
       throw new Error(error);
     }
