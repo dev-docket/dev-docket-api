@@ -18,9 +18,9 @@ export class UpdateTaskPartialDto {
 
   @ApiProperty()
   @IsNumber()
-  teamId?: number;
+  teamId: number;
 
   @ApiProperty()
   @IsNumber()
-  userId?: number;
+  userId: number;
 }

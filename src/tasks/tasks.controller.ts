@@ -21,7 +21,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { AssignedUsersService } from 'src/assigned-user/assigned-users.service';
 import { UpdateTaskPartialDto } from './dto/update-task-partial.dto';
 import { Response } from 'express';
-import { TasksActivityService } from 'src/tasks-activity/tasks-activity.service';
+import { TaskActivitiesService } from 'src/task-activities/task-activities.service';
 import sequelize from 'src/db/database';
 
 @Controller('api/v1/tasks')
@@ -32,7 +32,7 @@ export class TasksController {
   constructor(
     private readonly tasksService: TasksService,
     private readonly assignedUsersService: AssignedUsersService,
-    private readonly tasksActivityService: TasksActivityService,
+    private readonly taskActivitiesService: TaskActivitiesService,
   ) {}
 
   @Get(':taskId')
@@ -110,7 +110,7 @@ export class TasksController {
       const activities = [];
       if (updateTaskPartialDto.name) {
         activities.push(
-          await this.tasksActivityService.createChangedNameActivity(
+          await this.taskActivitiesService.createChangedNameActivity(
             updateTaskPartialDto.userId,
             updateTaskPartialDto.id,
             transaction,
@@ -120,7 +120,7 @@ export class TasksController {
 
       if (updateTaskPartialDto.description) {
         activities.push(
-          await this.tasksActivityService.createDescriptionActivity(
+          await this.taskActivitiesService.createDescriptionActivity(
             updateTaskPartialDto.userId,
             updateTaskPartialDto.id,
             transaction,
