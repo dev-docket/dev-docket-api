@@ -2,17 +2,12 @@ import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import Task from './task.model';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Transaction } from 'sequelize';
-import sequelize from 'src/db/database';
 import Team from 'src/teams/team.model';
 import { UpdateTaskPartialDto } from './dto/update-task-partial.dto';
 
 @Injectable()
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
-
-  async startTransaction(): Promise<Transaction> {
-    return await sequelize.transaction();
-  }
 
   async getUserTasks(userId: number): Promise<Task[]> {
     return await Task.findAll({
@@ -80,7 +75,8 @@ export class TasksService {
 
       // console.log(definedFields);
 
-      return await task.update(definedFields, { transaction });
+      const updatedTask = await task.update(definedFields, { transaction });
+      return updatedTask.get({ plain: true });
     } catch (error) {
       this.logger.error(error);
     }

@@ -21,6 +21,8 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { AssignedUsersService } from 'src/assigned-user/assigned-users.service';
 import { UpdateTaskPartialDto } from './dto/update-task-partial.dto';
 import { Response } from 'express';
+import { TasksActivityService } from 'src/tasks-activity/tasks-activity.service';
+import sequelize from 'src/db/database';
 
 @Controller('api/v1/tasks')
 @ApiTags('Tasks')
@@ -30,6 +32,7 @@ export class TasksController {
   constructor(
     private readonly tasksService: TasksService,
     private readonly assignedUsersService: AssignedUsersService,
+    private readonly tasksActivityService: TasksActivityService,
   ) {}
 
   @Get(':taskId')
@@ -61,7 +64,7 @@ export class TasksController {
 
   @Post()
   async createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    const transaction: Transaction = await this.tasksService.startTransaction();
+    const transaction: Transaction = await sequelize.transaction();
 
     try {
       const task: Task = await this.tasksService.createTask(
@@ -94,8 +97,9 @@ export class TasksController {
   async updateTaskPartial(
     @Param('taskId', new ParseIntPipe()) taskId: number,
     @Body() updateTaskPartialDto: UpdateTaskPartialDto,
+    @Res() res: Response,
   ) {
-    const transaction: Transaction = await this.tasksService.startTransaction();
+    const transaction: Transaction = await sequelize.transaction();
     try {
       const updatedTask = await this.tasksService.updateTaskPartial(
         taskId,
@@ -103,10 +107,34 @@ export class TasksController {
         transaction,
       );
 
+      const activities = [];
+      if (updateTaskPartialDto.name) {
+        activities.push(
+          await this.tasksActivityService.createChangedNameActivity(
+            updateTaskPartialDto.userId,
+            updateTaskPartialDto.id,
+            transaction,
+          ),
+        );
+      }
+
+      if (updateTaskPartialDto.description) {
+        activities.push(
+          await this.tasksActivityService.createDescriptionActivity(
+            updateTaskPartialDto.userId,
+            updateTaskPartialDto.id,
+            transaction,
+          ),
+        );
+      }
+
       await transaction.commit();
-      return updatedTask;
+
+      res.status(HttpStatus.OK).send({ ...updatedTask, activities });
     } catch (error) {
       await transaction.rollback();
+
+      this.logger.error(error);
 
       throw new HttpException(
         {
@@ -123,7 +151,7 @@ export class TasksController {
     @Param('taskId', new ParseIntPipe()) taskId: number,
     @Res() res: Response,
   ) {
-    const transaction: Transaction = await this.tasksService.startTransaction();
+    const transaction: Transaction = await sequelize.transaction();
     try {
       await this.assignedUsersService.deleteAssignedUsers(taskId, transaction);
       await this.tasksService.deleteTask(taskId, transaction);
