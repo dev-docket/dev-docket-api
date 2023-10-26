@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user.dto';
 import * as bcrypt from 'bcrypt';
-import User from 'src/user/user.model';
+import User from 'src/users/user.model';
 import { Transaction } from 'sequelize';
 
 @Injectable()
@@ -51,6 +51,7 @@ export class AuthService {
           user: {
             id: user.id,
             email: user.email,
+            username: user.username,
           },
           access_token: this.jwtService.sign(payload),
         };

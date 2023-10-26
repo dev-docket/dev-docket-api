@@ -8,7 +8,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { AuthService } from './auth.service';
-import User from 'src/user/user.model';
+import User from 'src/users/user.model';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('api/v1/auth')

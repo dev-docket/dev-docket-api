@@ -1,4 +1,4 @@
-import User from 'src/user/user.model';
+import User from 'src/users/user.model';
 
 export class GetAllMembersResponseDto {
   projectId: number;

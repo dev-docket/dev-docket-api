@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import ProjectMember from './project-member.model';
 import { ProjectsService } from 'src/projects/projects.service';
-import User from 'src/user/user.model';
+import User from 'src/users/user.model';
 import { Op, Transaction } from 'sequelize';
 import { GetAllMembersResponseDto } from './dto/get-all-members-response.dto';
 
