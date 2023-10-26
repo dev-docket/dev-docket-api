@@ -9,8 +9,10 @@ import {
 import { ProjectMembersService } from './project-members.service';
 import { GetAllMembersResponseDto } from './dto/get-all-members-response.dto';
 import { Response } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('api/v1/projects')
+@ApiTags('Projects Members')
 export class ProjectMembersController {
   constructor(private readonly projectMembersService: ProjectMembersService) {}
 

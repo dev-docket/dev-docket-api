@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import ProjectInvitation from './project-invitation.model';
 import { ProjectsService } from 'src/projects/projects.service';
-import { UsersService } from 'src/user/users.service';
+import { UsersService } from 'src/users/users.service';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { nanoid } from 'nanoid';
 import { ProjectMembersService } from 'src/project-members/project-members.service';

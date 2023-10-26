@@ -3,8 +3,10 @@ import sequelize from '../db/database';
 import { Exclude } from 'class-transformer';
 
 class User extends Model {
-  public id!: number;
-  public email!: string;
+  id!: number;
+  email!: string;
+  username: string;
+  isProfileCompleted!: boolean;
 
   @Exclude()
   password!: string;
@@ -21,9 +23,18 @@ User.init(
       type: new DataTypes.STRING(128),
       allowNull: false,
     },
+    username: {
+      type: new DataTypes.STRING(128),
+      allowNull: true,
+    },
     password: {
       type: new DataTypes.STRING(128),
       allowNull: false,
+    },
+    isProfileCompleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      field: 'is_profile_completed',
     },
   },
   {

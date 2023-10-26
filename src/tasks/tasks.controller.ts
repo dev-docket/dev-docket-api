@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Res,
+  Logger,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import Task from './task.model';
@@ -20,13 +21,18 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { AssignedUsersService } from 'src/assigned-user/assigned-users.service';
 import { UpdateTaskPartialDto } from './dto/update-task-partial.dto';
 import { Response } from 'express';
+import { TaskActivitiesService } from 'src/task-activities/task-activities.service';
+import sequelize from 'src/db/database';
 
 @Controller('api/v1/tasks')
-@ApiTags('tasks')
+@ApiTags('Tasks')
 export class TasksController {
+  private readonly logger = new Logger(TasksController.name);
+
   constructor(
     private readonly tasksService: TasksService,
     private readonly assignedUsersService: AssignedUsersService,
+    private readonly taskActivitiesService: TaskActivitiesService,
   ) {}
 
   @Get(':taskId')
@@ -58,7 +64,7 @@ export class TasksController {
 
   @Post()
   async createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    const transaction: Transaction = await this.tasksService.startTransaction();
+    const transaction: Transaction = await sequelize.transaction();
 
     try {
       const task: Task = await this.tasksService.createTask(
@@ -73,6 +79,8 @@ export class TasksController {
       await transaction.commit();
       return task;
     } catch (error) {
+      this.logger.error(error);
+
       await transaction.rollback();
 
       throw new HttpException(
@@ -89,8 +97,9 @@ export class TasksController {
   async updateTaskPartial(
     @Param('taskId', new ParseIntPipe()) taskId: number,
     @Body() updateTaskPartialDto: UpdateTaskPartialDto,
+    @Res() res: Response,
   ) {
-    const transaction: Transaction = await this.tasksService.startTransaction();
+    const transaction: Transaction = await sequelize.transaction();
     try {
       const updatedTask = await this.tasksService.updateTaskPartial(
         taskId,
@@ -98,10 +107,34 @@ export class TasksController {
         transaction,
       );
 
+      const activities = [];
+      if (updateTaskPartialDto.name) {
+        activities.push(
+          await this.taskActivitiesService.createChangedNameActivity(
+            updateTaskPartialDto.userId,
+            updateTaskPartialDto.id,
+            transaction,
+          ),
+        );
+      }
+
+      if (updateTaskPartialDto.description) {
+        activities.push(
+          await this.taskActivitiesService.createDescriptionActivity(
+            updateTaskPartialDto.userId,
+            updateTaskPartialDto.id,
+            transaction,
+          ),
+        );
+      }
+
       await transaction.commit();
-      return updatedTask;
+
+      res.status(HttpStatus.OK).send({ ...updatedTask, activities });
     } catch (error) {
       await transaction.rollback();
+
+      this.logger.error(error);
 
       throw new HttpException(
         {
@@ -118,7 +151,7 @@ export class TasksController {
     @Param('taskId', new ParseIntPipe()) taskId: number,
     @Res() res: Response,
   ) {
-    const transaction: Transaction = await this.tasksService.startTransaction();
+    const transaction: Transaction = await sequelize.transaction();
     try {
       await this.assignedUsersService.deleteAssignedUsers(taskId, transaction);
       await this.tasksService.deleteTask(taskId, transaction);

@@ -20,8 +20,8 @@ import { Response } from 'express';
 
 @Controller('api/v1/projects')
 @ApiTags('Projects')
-export class Projects {
-  private readonly logger = new Logger(Projects.name);
+export class ProjectsController {
+  private readonly logger = new Logger(ProjectsController.name);
 
   constructor(
     private readonly projectsService: ProjectsService,
