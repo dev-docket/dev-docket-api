@@ -2,9 +2,15 @@ import { Injectable } from '@nestjs/common';
 import TaskActivity from './task-activities.model';
 import { Transaction } from 'sequelize';
 import User from 'src/users/user.model';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class TaskActivitiesService {
+  getCurrentTimeInIso8601() {
+    const currentTime = DateTime.now();
+    return currentTime.toISO();
+  }
+
   async getTaskActivities(taskId: number) {
     const activities = await TaskActivity.findAll({
       where: { taskId },
@@ -41,7 +47,7 @@ export class TaskActivitiesService {
     isAutoActivity?: boolean;
     transaction: Transaction;
   }) {
-    const createdAt = new Date();
+    const createdAt = this.getCurrentTimeInIso8601();
 
     const activity = await TaskActivity.create(
       {
@@ -64,7 +70,7 @@ export class TaskActivitiesService {
     taskId: number,
     transaction: Transaction,
   ) {
-    const createdAt = new Date();
+    const createdAt = this.getCurrentTimeInIso8601();
 
     const activity = await TaskActivity.create(
       {
@@ -87,7 +93,7 @@ export class TaskActivitiesService {
     taskId: number,
     transaction: Transaction,
   ) {
-    const createdAt = new Date();
+    const createdAt = this.getCurrentTimeInIso8601();
 
     const activity = await TaskActivity.create(
       {
