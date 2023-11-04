@@ -12,7 +12,7 @@ class Task extends Model {
 Task.init(
   {
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
@@ -30,7 +30,7 @@ Task.init(
       defaultValue: 'TODO',
     },
     teamId: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: 'team_id',
       references: {
