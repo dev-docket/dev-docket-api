@@ -13,12 +13,12 @@ class ProjectInvitation extends Model {
 ProjectInvitation.init(
   {
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
     creatorId: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: 'creator_id',
       references: {
@@ -27,7 +27,7 @@ ProjectInvitation.init(
       },
     },
     projectId: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: 'project_id',
       references: {
@@ -36,7 +36,7 @@ ProjectInvitation.init(
       },
     },
     userId: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: 'user_id',
       references: {
