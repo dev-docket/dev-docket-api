@@ -34,7 +34,8 @@ AssignedUser.init(
     },
   },
   {
-    tableName: 'assigned_user',
+    tableName: 'assigned_users',
+    modelName: 'AssignedUser',
     sequelize,
     timestamps: false,
   },
