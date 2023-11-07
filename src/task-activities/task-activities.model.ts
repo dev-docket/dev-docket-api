@@ -53,7 +53,7 @@ TaskActivity.init(
   {
     sequelize: sequelize,
     modelName: 'TaskActivity',
-    tableName: 'tasks_activity',
+    tableName: 'task_activities',
     timestamps: false,
   },
 );
