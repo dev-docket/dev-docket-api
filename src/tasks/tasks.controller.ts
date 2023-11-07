@@ -76,6 +76,14 @@ export class TasksController {
         transaction,
       );
 
+      await this.taskActivitiesService.createAutoActivity({
+        userId: createTaskDto.userId,
+        taskId: task.id,
+        description: 'Task created',
+        transaction,
+        isAutoActivity: true,
+      });
+
       await transaction.commit();
       return task;
     } catch (error) {
@@ -156,6 +164,10 @@ export class TasksController {
       await this.assignedUsersService.deleteAssignedUsers(taskId, transaction);
       await this.tasksService.deleteTask(taskId, transaction);
 
+      await this.taskActivitiesService.deleteAllTaskActivities(
+        taskId,
+        transaction,
+      );
       await transaction.commit();
 
       res.status(HttpStatus.NO_CONTENT).send();

@@ -110,4 +110,11 @@ export class TaskActivitiesService {
 
     return activity.get({ plain: true });
   }
+
+  async deleteAllTaskActivities(taskId: number, transaction: Transaction) {
+    await TaskActivity.destroy({
+      where: { taskId },
+      transaction,
+    });
+  }
 }
