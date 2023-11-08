@@ -115,7 +115,9 @@ export class TasksController {
         transaction,
       );
 
-      const activities = [];
+      const activities =
+        await this.taskActivitiesService.getTaskActivities(taskId);
+
       if (updateTaskPartialDto.name) {
         activities.push(
           await this.taskActivitiesService.createChangedNameActivity(
@@ -133,6 +135,18 @@ export class TasksController {
             updateTaskPartialDto.id,
             transaction,
           ),
+        );
+      }
+
+      if (updateTaskPartialDto.status) {
+        activities.push(
+          await this.taskActivitiesService.createAutoActivity({
+            description: `Task status changed to ${updateTaskPartialDto.status}`,
+            userId: updateTaskPartialDto.userId,
+            taskId: updateTaskPartialDto.id,
+            transaction,
+            isAutoActivity: true,
+          }),
         );
       }
 
