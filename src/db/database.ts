@@ -8,6 +8,12 @@ const sequelize = new Sequelize(database, username, password, {
   host,
   port,
   dialect,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
 });
 
 export default sequelize;
