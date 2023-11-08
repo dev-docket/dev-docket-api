@@ -6,6 +6,7 @@ class Task extends Model {
   public name!: string;
   public description: string;
   public status: string;
+  public priority: string;
   public teamId!: number;
 }
 
@@ -28,6 +29,11 @@ Task.init(
       type: DataTypes.ENUM('BACKLOG', 'TODO', 'IN_PROGRESS', 'DONE'),
       allowNull: true,
       defaultValue: 'TODO',
+    },
+    priority: {
+      type: DataTypes.ENUM('NO_PRIORITY', 'URGENT', 'HIGH', 'MEDIUM', 'LOW'),
+      allowNull: true,
+      defaultValue: 'NO_PRIORITY',
     },
     teamId: {
       type: DataTypes.INTEGER,
