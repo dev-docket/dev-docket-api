@@ -14,6 +14,9 @@ export class UpdateTaskPartialDto {
   status?: string;
 
   @ApiProperty()
+  priority?: string;
+
+  @ApiProperty()
   description?: string;
 
   @ApiProperty()

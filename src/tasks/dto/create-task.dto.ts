@@ -7,7 +7,7 @@ export class CreateTaskDto {
   name: string;
 
   @ApiProperty()
-  @IsIn(['TODO', 'IN_PROGRESS', 'DONE'])
+  @IsIn(['BACKLOG', 'TODO', 'IN_PROGRESS', 'DONE'])
   status: string;
 
   @ApiProperty()

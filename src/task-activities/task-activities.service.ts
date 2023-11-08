@@ -14,7 +14,7 @@ export class TaskActivitiesService {
   async getTaskActivities(taskId: number) {
     const activities = await TaskActivity.findAll({
       where: { taskId },
-      order: [['createdAt', 'DESC']],
+      order: [['createdAt', 'ASC']],
     });
 
     // each activity has a user id. return whole user object
@@ -109,5 +109,12 @@ export class TaskActivitiesService {
     );
 
     return activity.get({ plain: true });
+  }
+
+  async deleteAllTaskActivities(taskId: number, transaction: Transaction) {
+    await TaskActivity.destroy({
+      where: { taskId },
+      transaction,
+    });
   }
 }

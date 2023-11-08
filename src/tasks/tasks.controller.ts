@@ -76,6 +76,14 @@ export class TasksController {
         transaction,
       );
 
+      await this.taskActivitiesService.createAutoActivity({
+        userId: createTaskDto.userId,
+        taskId: task.id,
+        description: 'Task created',
+        transaction,
+        isAutoActivity: true,
+      });
+
       await transaction.commit();
       return task;
     } catch (error) {
@@ -107,7 +115,9 @@ export class TasksController {
         transaction,
       );
 
-      const activities = [];
+      const activities =
+        await this.taskActivitiesService.getTaskActivities(taskId);
+
       if (updateTaskPartialDto.name) {
         activities.push(
           await this.taskActivitiesService.createChangedNameActivity(
@@ -125,6 +135,18 @@ export class TasksController {
             updateTaskPartialDto.id,
             transaction,
           ),
+        );
+      }
+
+      if (updateTaskPartialDto.status) {
+        activities.push(
+          await this.taskActivitiesService.createAutoActivity({
+            description: `Task status changed to ${updateTaskPartialDto.status}`,
+            userId: updateTaskPartialDto.userId,
+            taskId: updateTaskPartialDto.id,
+            transaction,
+            isAutoActivity: true,
+          }),
         );
       }
 
@@ -156,6 +178,10 @@ export class TasksController {
       await this.assignedUsersService.deleteAssignedUsers(taskId, transaction);
       await this.tasksService.deleteTask(taskId, transaction);
 
+      await this.taskActivitiesService.deleteAllTaskActivities(
+        taskId,
+        transaction,
+      );
       await transaction.commit();
 
       res.status(HttpStatus.NO_CONTENT).send();
