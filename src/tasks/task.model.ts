@@ -25,7 +25,7 @@ Task.init(
       allowNull: true,
     },
     status: {
-      type: DataTypes.ENUM('TODO', 'IN_PROGRESS', 'DONE'),
+      type: DataTypes.ENUM('BACKLOG', 'TODO', 'IN_PROGRESS', 'DONE'),
       allowNull: true,
       defaultValue: 'TODO',
     },
