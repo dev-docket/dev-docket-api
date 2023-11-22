@@ -111,6 +111,19 @@ export class TaskActivitiesService {
     return activity.get({ plain: true });
   }
 
+  async createActivityLog(userId, taskId, oldStatus, newStatus, transaction) {
+    const description = `task status changed from ${oldStatus} to ${newStatus}`;
+
+    const activity = await this.createAutoActivity({
+      userId,
+      taskId,
+      description,
+      transaction,
+    });
+
+    return activity;
+  }
+
   async deleteAllTaskActivities(taskId: number, transaction: Transaction) {
     await TaskActivity.destroy({
       where: { taskId },
