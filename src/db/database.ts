@@ -2,7 +2,9 @@ import { Sequelize } from 'sequelize';
 import config from '../config/config';
 
 const env = process.env.NODE_ENV || 'development';
-const { username, password, database, host, port, dialect } = config[env];
+
+console.log(env);
+const { username, password, database, host, port } = config[env];
 
 let sequelize;
 
@@ -10,7 +12,7 @@ if (env === 'production') {
   sequelize = new Sequelize(database, username, password, {
     host,
     port,
-    dialect,
+    dialect: 'postgres',
     dialectOptions: {
       ssl: {
         require: true,
