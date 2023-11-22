@@ -10,7 +10,15 @@ import {
   Query,
 } from '@nestjs/common';
 import { TeamsService } from './teams.service';
-import { ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { GetTeamResponse } from './dto/get-team-response.dto';
 import { TeamMembersService } from 'src/team-members/team-members.service';
 import Team from './team.model';
@@ -30,6 +38,8 @@ export class TeamsController {
     required: false,
     description: 'The field to return from the Team',
   })
+  @ApiOperation({ summary: 'Get a team by its ID' })
+  @ApiParam({ name: 'teamId', description: 'The ID of the team to retrieve' })
   @ApiOkResponse({
     description:
       'The team has been successfully returned with the given field.',
@@ -53,6 +63,12 @@ export class TeamsController {
   }
 
   @Get(':teamId/tasks')
+  @ApiOperation({ summary: 'Get tasks within a specific team' })
+  @ApiParam({
+    name: 'teamId',
+    description: 'The ID of the team to retrieve tasks for',
+  })
+  @ApiResponse({ status: 200, description: 'List of tasks within the team' })
   async getTasksInTeams(@Param('teamId', new ParseIntPipe()) teamId: number) {
     try {
       return await this.teamsService.getTasksInTeams(teamId);
@@ -68,6 +84,16 @@ export class TeamsController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create a new team' })
+  @ApiBody({
+    description: 'The data needed to create a new team',
+    type: CreateTeamDto,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'The team has been successfully created',
+    type: Team,
+  })
   async createTeam(@Body() createTeamDto: CreateTeamDto): Promise<Team> {
     const transaction = await this.teamsService.startTransaction();
     try {
