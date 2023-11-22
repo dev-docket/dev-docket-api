@@ -109,11 +109,12 @@ export class TasksController {
   ) {
     const transaction: Transaction = await sequelize.transaction();
     try {
-      const updatedTask = await this.tasksService.updateTaskPartial(
-        taskId,
-        updateTaskPartialDto,
-        transaction,
-      );
+      const { updatedTask, oldTask } =
+        await this.tasksService.updateTaskPartial(
+          taskId,
+          updateTaskPartialDto,
+          transaction,
+        );
 
       const activities =
         await this.taskActivitiesService.getTaskActivities(taskId);
@@ -140,13 +141,13 @@ export class TasksController {
 
       if (updateTaskPartialDto.status) {
         activities.push(
-          await this.taskActivitiesService.createAutoActivity({
-            description: `Task status changed to ${updateTaskPartialDto.status}`,
-            userId: updateTaskPartialDto.userId,
-            taskId: updateTaskPartialDto.id,
+          await this.taskActivitiesService.createActivityLog(
+            updateTaskPartialDto.userId,
+            updateTaskPartialDto.id,
+            oldTask.status,
+            updateTaskPartialDto.status,
             transaction,
-            isAutoActivity: true,
-          }),
+          ),
         );
       }
 

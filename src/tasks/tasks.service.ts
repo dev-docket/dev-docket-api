@@ -55,9 +55,12 @@ export class TasksService {
     taskId: number,
     updateTaskDto: UpdateTaskPartialDto,
     transaction: Transaction,
-  ): Promise<Task> {
+  ): Promise<
+    { updatedTask: Task; oldTask: Task } | { updatedTask: null; oldTask: null }
+  > {
     try {
       const task = await Task.findByPk(taskId);
+
       if (!task) {
         throw new HttpException(
           'The task does not exist',
@@ -65,18 +68,21 @@ export class TasksService {
         );
       }
 
+      const oldTask = JSON.parse(JSON.stringify(task));
+
       const definedFields = Object.keys(updateTaskDto)
         .filter((key) => updateTaskDto[key] !== undefined)
         .reduce((obj, key) => {
           obj[key] = updateTaskDto[key];
           return obj;
         }, {} as Partial<UpdateTaskPartialDto>);
-      // delete definedFields.id; // Remove id field as it should not be updated
-
-      // console.log(definedFields);
 
       const updatedTask = await task.update(definedFields, { transaction });
-      return updatedTask.get({ plain: true });
+      console.log(oldTask);
+      return {
+        updatedTask: updatedTask.get({ plain: true }),
+        oldTask,
+      };
     } catch (error) {
       this.logger.error(error);
     }
