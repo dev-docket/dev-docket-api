@@ -27,9 +27,18 @@ export class UsersService {
     }
   }
 
-  async completeProfile(userCompleteProfile: CompleteProfileDto) {
+  /**
+   * Update the completion status of a user's profile.
+   * This method updates the username and marks the profile as completed.
+   * @param completeProfileDto - DTO containing the user ID and updated profile information.
+   * @returns The updated user object.
+   * @throws Error if the user is not found or if an error occurs during the update.
+   */
+  async updateProfileCompletionStatus(
+    completeProfileDto: CompleteProfileDto,
+  ): Promise<User> {
     try {
-      const user = await User.findByPk(userCompleteProfile.user.id, {
+      const user = await User.findByPk(completeProfileDto.user.id, {
         attributes: {
           exclude: ['password'],
         },
@@ -40,13 +49,15 @@ export class UsersService {
       }
 
       const updatedUser = await user.update({
-        username: userCompleteProfile.user.username,
+        username: completeProfileDto.user.username,
         isProfileCompleted: true,
       });
 
       return updatedUser;
     } catch (error) {
-      throw new Error(error);
+      throw new Error(
+        error.message || 'Failed to update profile completion status',
+      );
     }
   }
 }
