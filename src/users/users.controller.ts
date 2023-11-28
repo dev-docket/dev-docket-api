@@ -5,6 +5,8 @@ import {
   HttpException,
   Res,
   HttpStatus,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CompleteProfileDto } from './dto/complete-profile.dto';
@@ -15,6 +17,29 @@ import { Response } from 'express';
 @ApiTags('Users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Get('/search')
+  async getUsersByUsernameAndProject(
+    @Query('username') usernameFragment: string,
+    @Query('projectSlug') projectSlug: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const users = await this.usersService.getUsersByUsernameAndProject(
+        usernameFragment,
+        projectSlug,
+      );
+      if (!users) {
+        return res.status(HttpStatus.NOT_FOUND).send('No users found');
+      }
+      return res.status(HttpStatus.OK).json(users);
+    } catch (error) {
+      throw new HttpException(
+        `Failed to retrieve users: ${error}`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
 
   /**
    * Update the completion status of a user's profile.
