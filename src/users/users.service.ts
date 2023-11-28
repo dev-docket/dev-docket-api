@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import User from './user.model';
 import { CompleteProfileDto } from './dto/complete-profile.dto';
+import { Op } from 'sequelize';
+import ProjectMember from 'src/project-members/project-member.model';
+import Project from 'src/projects/project.model';
 
 @Injectable()
 export class UsersService {
@@ -58,6 +61,51 @@ export class UsersService {
       throw new Error(
         error.message || 'Failed to update profile completion status',
       );
+    }
+  }
+
+  async getUsersByUsernameAndProject(
+    usernameFragment: string,
+    projectSlug: string,
+  ) {
+    try {
+      const projectId = await Project.findOne({
+        where: {
+          slug: projectSlug,
+        },
+        attributes: ['id'],
+      });
+
+      if (!projectId) {
+        throw new Error('Project not found');
+      }
+
+      const projectMembers = await ProjectMember.findAll({
+        where: {
+          projectId: projectId.id,
+        },
+        attributes: ['userId'],
+      });
+
+      const userIds = projectMembers.map((member) => member.userId);
+
+      const users = await User.findAll({
+        where: {
+          username: {
+            [Op.iLike]: `%${usernameFragment}%`,
+          },
+          id: {
+            [Op.in]: userIds,
+          },
+        },
+        attributes: {
+          exclude: ['password'],
+        },
+      });
+
+      return users;
+    } catch (error) {
+      throw new Error('Error fetching users');
     }
   }
 }

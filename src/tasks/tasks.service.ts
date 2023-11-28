@@ -4,6 +4,8 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { Transaction } from 'sequelize';
 import Team from 'src/teams/team.model';
 import { UpdateTaskPartialDto } from './dto/update-task-partial.dto';
+import AssignedUser from 'src/assigned-user/assigned-user.model';
+import User from 'src/users/user.model';
 
 @Injectable()
 export class TasksService {
@@ -21,7 +23,27 @@ export class TasksService {
   }
 
   async getTask(taskId: number): Promise<Task> {
-    return await Task.findByPk(taskId);
+    const task = await Task.findByPk(taskId);
+    if (!task) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+
+    const assignedUser = await AssignedUser.findOne({
+      where: { taskId },
+      raw: true,
+    });
+
+    const user = await User.findByPk(assignedUser.userId, {
+      raw: true,
+      attributes: {
+        exclude: ['password'],
+      },
+    });
+
+    return {
+      ...task.get({ plain: true }),
+      assignedUser: user,
+    };
   }
 
   async createTask(

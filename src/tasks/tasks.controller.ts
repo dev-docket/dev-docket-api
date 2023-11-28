@@ -23,6 +23,8 @@ import { UpdateTaskPartialDto } from './dto/update-task-partial.dto';
 import { Response } from 'express';
 import { TaskActivitiesService } from 'src/task-activities/task-activities.service';
 import sequelize from 'src/db/database';
+import AssignedUser from 'src/assigned-user/assigned-user.model';
+import { AssignUserDto } from './dto/assign-user.dto';
 
 @Controller('api/v1/tasks')
 @ApiTags('Tasks')
@@ -71,10 +73,10 @@ export class TasksController {
         createTaskDto,
         transaction,
       );
-      await this.assignedUsersService.assignUserToTask(
-        { userId: createTaskDto.userId, taskId: task.id },
-        transaction,
-      );
+      // await this.assignedUsersService.assignUserToTask(
+      //   { userId: createTaskDto.userId, taskId: task.id },
+      //   transaction,
+      // );
 
       await this.taskActivitiesService.createAutoActivity({
         userId: createTaskDto.userId,
@@ -86,6 +88,46 @@ export class TasksController {
 
       await transaction.commit();
       return task;
+    } catch (error) {
+      this.logger.error(error);
+
+      await transaction.rollback();
+
+      throw new HttpException(
+        {
+          status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error.response || 'Internal Server Error',
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('assign')
+  async assignUserToTask(
+    @Body() assignUserDto: AssignUserDto,
+    @Res() res: Response,
+  ) {
+    const transaction: Transaction = await sequelize.transaction();
+
+    try {
+      const assignedUser: AssignedUser =
+        await this.assignedUsersService.assignUserToTask(
+          assignUserDto,
+          transaction,
+        );
+
+      await this.taskActivitiesService.createAutoActivity({
+        userId: assignUserDto.userId,
+        taskId: assignUserDto.taskId,
+        description: 'Task assigned',
+        transaction,
+        isAutoActivity: true,
+      });
+
+      await transaction.commit();
+
+      res.status(HttpStatus.CREATED).send(assignedUser);
     } catch (error) {
       this.logger.error(error);
 

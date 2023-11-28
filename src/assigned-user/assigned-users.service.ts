@@ -9,6 +9,15 @@ export class AssignedUsersService {
     assignUserDto: AssignUserDto,
     transaction: Transaction,
   ): Promise<AssignedUser> {
+    const assignedUser = await AssignedUser.findOne({
+      where: { taskId: assignUserDto.taskId },
+      transaction,
+    });
+
+    if (assignedUser) {
+      throw new Error('User already assigned to task');
+    }
+
     return AssignedUser.create({ ...assignUserDto }, { transaction });
   }
 
