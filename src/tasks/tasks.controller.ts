@@ -189,6 +189,18 @@ export class TasksController {
         );
       }
 
+      if (updateTaskPartialDto.priority) {
+        activities.push(
+          await this.taskActivitiesService.createActivityLog(
+            updateTaskPartialDto.userId,
+            updateTaskPartialDto.id,
+            oldTask.priority,
+            updateTaskPartialDto.priority,
+            transaction,
+          ),
+        );
+      }
+
       await transaction.commit();
 
       res.status(HttpStatus.OK).send({ ...updatedTask, activities });
