@@ -33,6 +33,10 @@ export class TasksService {
       raw: true,
     });
 
+    if (!assignedUser) {
+      return task;
+    }
+
     const user = await User.findByPk(assignedUser.userId, {
       raw: true,
       attributes: {
