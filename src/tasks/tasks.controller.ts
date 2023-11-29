@@ -73,10 +73,6 @@ export class TasksController {
         createTaskDto,
         transaction,
       );
-      // await this.assignedUsersService.assignUserToTask(
-      //   { userId: createTaskDto.userId, taskId: task.id },
-      //   transaction,
-      // );
 
       await this.taskActivitiesService.createAutoActivity({
         userId: createTaskDto.userId,
