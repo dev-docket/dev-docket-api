@@ -73,10 +73,6 @@ export class TasksController {
         createTaskDto,
         transaction,
       );
-      // await this.assignedUsersService.assignUserToTask(
-      //   { userId: createTaskDto.userId, taskId: task.id },
-      //   transaction,
-      // );
 
       await this.taskActivitiesService.createAutoActivity({
         userId: createTaskDto.userId,
@@ -188,6 +184,18 @@ export class TasksController {
             updateTaskPartialDto.id,
             oldTask.status,
             updateTaskPartialDto.status,
+            transaction,
+          ),
+        );
+      }
+
+      if (updateTaskPartialDto.priority) {
+        activities.push(
+          await this.taskActivitiesService.createActivityLog(
+            updateTaskPartialDto.userId,
+            updateTaskPartialDto.id,
+            oldTask.priority,
+            updateTaskPartialDto.priority,
             transaction,
           ),
         );

@@ -4,23 +4,30 @@ import {
   Delete,
   Param,
   Post,
-  HttpException,
   HttpStatus,
+  HttpException,
+  Logger,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AssignUserDto } from './dto/assign-user.dto';
 import { AssignedUsersService } from './assigned-users.service';
 import AssignedUser from './assigned-user.model';
+import { TaskActivitiesService } from 'src/task-activities/task-activities.service';
 
 @Controller('api/v1/tasks')
 @ApiTags('tasks')
 export class AssignedUsersController {
-  constructor(private assignedUsersService: AssignedUsersService) {}
+  private readonly logger = new Logger(AssignedUsersController.name);
+
+  constructor(
+    private assignedUsersService: AssignedUsersService,
+    private taskActivitiesService: TaskActivitiesService,
+  ) {}
 
   @Post(':taskId/assign-user')
   @ApiOperation({ summary: 'Assign user to a task' })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: HttpStatus.CREATED,
     description: 'User assigned successfully',
     type: AssignedUser,
   })
@@ -39,9 +46,14 @@ export class AssignedUsersController {
       return assignedUser;
     } catch (error) {
       await transaction.rollback();
+      this.logger.error(error);
+
       throw new HttpException(
-        'Failed to assign user to task',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          status: HttpStatus.BAD_REQUEST,
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -57,13 +69,15 @@ export class AssignedUsersController {
     const transaction = await AssignedUser.sequelize.transaction();
     try {
       await this.assignedUsersService.deleteAssignedUsers(taskId, transaction);
+      // await this.taskActivitiesService.createAutoActivity({
+      //   userId: assignUserDto.userId,
+      //   taskId,
+      //   description: 'deleted assigned users from task',
+      //   isAutoActivity: true,
+      // });
       await transaction.commit();
     } catch (error) {
       await transaction.rollback();
-      throw new HttpException(
-        'Failed to delete assigned users',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
     }
   }
 }
