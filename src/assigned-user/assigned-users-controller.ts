@@ -6,6 +6,7 @@ import {
   Post,
   HttpStatus,
   HttpException,
+  Logger,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AssignUserDto } from './dto/assign-user.dto';
@@ -16,6 +17,8 @@ import { TaskActivitiesService } from 'src/task-activities/task-activities.servi
 @Controller('api/v1/tasks')
 @ApiTags('tasks')
 export class AssignedUsersController {
+  private readonly logger = new Logger(AssignedUsersController.name);
+
   constructor(
     private assignedUsersService: AssignedUsersService,
     private taskActivitiesService: TaskActivitiesService,
@@ -43,9 +46,14 @@ export class AssignedUsersController {
       return assignedUser;
     } catch (error) {
       await transaction.rollback();
+      this.logger.error(error);
+
       throw new HttpException(
-        'Failed to assign user to task',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          status: HttpStatus.BAD_REQUEST,
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
