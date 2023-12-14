@@ -62,7 +62,16 @@ export class TaskActivitiesService {
       },
     );
 
-    return activity.get({ plain: true });
+    const user = await User.findByPk(userId, {
+      attributes: {
+        exclude: ['password'],
+      },
+    });
+
+    return {
+      ...activity.get({ plain: true }),
+      user,
+    };
   }
 
   async createChangedNameActivity(
@@ -85,7 +94,16 @@ export class TaskActivitiesService {
       },
     );
 
-    return activity.get({ plain: true });
+    const user = await User.findByPk(userId, {
+      attributes: {
+        exclude: ['password'],
+      },
+    });
+
+    return {
+      ...activity.get({ plain: true }),
+      user,
+    };
   }
 
   async createDescriptionActivity(
@@ -108,10 +126,25 @@ export class TaskActivitiesService {
       },
     );
 
-    return activity.get({ plain: true });
+    const user = await User.findByPk(userId, {
+      attributes: {
+        exclude: ['password'],
+      },
+    });
+
+    return {
+      ...activity.get({ plain: true }),
+      user,
+    };
   }
 
-  async createActivityLog(userId, taskId, oldStatus, newStatus, transaction) {
+  async createActivityLog(
+    userId: number,
+    taskId: number,
+    oldStatus: string | number,
+    newStatus: string,
+    transaction: Transaction,
+  ) {
     const description = `task status changed from ${oldStatus} to ${newStatus}`;
 
     const activity = await this.createAutoActivity({
@@ -121,7 +154,16 @@ export class TaskActivitiesService {
       transaction,
     });
 
-    return activity;
+    const user = await User.findByPk(userId, {
+      attributes: {
+        exclude: ['password'],
+      },
+    });
+
+    return {
+      ...activity,
+      user,
+    };
   }
 
   async deleteAllTaskActivities(taskId: number, transaction: Transaction) {
