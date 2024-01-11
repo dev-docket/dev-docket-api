@@ -26,7 +26,11 @@ async function bootstrap() {
   app.use(limiter);
 
   app.enableCors({
-    origin: ['https://dev-docket.vercel.app', 'http://localhost:5173'], // adjust this to match the domain you are calling from
+    origin: [
+      'https://dev-docket.vercel.app',
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+    ], // adjust this to match the domain you are calling from
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
