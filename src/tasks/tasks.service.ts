@@ -104,7 +104,7 @@ export class TasksService {
         }, {} as Partial<UpdateTaskPartialDto>);
 
       const updatedTask = await task.update(definedFields, { transaction });
-      console.log(oldTask);
+      // console.log(oldTask);
       return {
         updatedTask: updatedTask.get({ plain: true }),
         oldTask,
