@@ -32,10 +32,7 @@ export class AssignedUsersController {
     type: AssignedUser,
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad request' })
-  async assignUserToTask(
-    @Param('taskId') taskId: number,
-    @Body() assignUserDto: AssignUserDto,
-  ) {
+  async assignUserToTask(@Body() assignUserDto: AssignUserDto) {
     const transaction = await AssignedUser.sequelize.transaction();
     try {
       const assignedUser = await this.assignedUsersService.assignUserToTask(
