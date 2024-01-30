@@ -6,10 +6,41 @@ import Team from 'src/teams/team.model';
 import { CreateProjectDto } from './dto/create-project.dto';
 import slugify from 'slugify';
 import { nanoid } from 'nanoid';
+import { UpdateProjectDto } from './dto/update.project.dto';
 
 @Injectable()
 export class ProjectsService {
   private readonly logger = new Logger(ProjectsService.name);
+
+  async updateProject(
+    projectId: number,
+    updateProjectDto: UpdateProjectDto,
+    transaction: Transaction,
+  ) {
+    try {
+      await Project.update(
+        {
+          name: updateProjectDto.name,
+          slug: `${slugify(updateProjectDto.name)}-${nanoid(4)}`,
+        },
+        {
+          where: {
+            id: projectId,
+          },
+          transaction,
+        },
+      );
+
+      return await Project.findOne({
+        where: {
+          id: projectId,
+        },
+        transaction,
+      });
+    } catch (error) {
+      this.logger.error('Error updating project', error.stack);
+    }
+  }
 
   async startTransaction() {
     return await Project.sequelize.transaction();
