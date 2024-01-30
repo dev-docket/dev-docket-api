@@ -9,6 +9,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Res,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
@@ -17,6 +18,7 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectMembersService } from 'src/project-members/project-members.service';
 import { Response } from 'express';
+import { UpdateProjectDto } from './dto/update.project.dto';
 
 @Controller('api/v1/projects')
 @ApiTags('Projects')
@@ -84,6 +86,28 @@ export class ProjectsController {
         },
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+  }
+
+  @Put(':projectId')
+  async updateProject(
+    @Param('projectId') projectId: number,
+    @Body() updateProjectDto: UpdateProjectDto,
+  ) {
+    const transaction = await this.projectsService.startTransaction();
+
+    try {
+      const project = await this.projectsService.updateProject(
+        projectId,
+        updateProjectDto,
+        transaction,
+      );
+
+      await transaction.commit();
+      return project;
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
     }
   }
 
