@@ -5,12 +5,12 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  Logger,
   Param,
   ParseIntPipe,
   Patch,
   Post,
   Res,
-  Logger,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import Task from './task.model';
@@ -65,6 +65,12 @@ export class TasksController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create a new task' })
+  @ApiResponse({
+    status: 201,
+    description: 'The task has been successfully created.',
+    type: Task,
+  })
   async createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
     const transaction: Transaction = await sequelize.transaction();
 
@@ -92,7 +98,7 @@ export class TasksController {
       throw new HttpException(
         {
           status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-          error: error.response || 'Internal Server Error',
+          message: error.message,
         },
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -133,6 +139,7 @@ export class TasksController {
         {
           status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
           error: error.response || 'Internal Server Error',
+          message: error.message,
         },
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );

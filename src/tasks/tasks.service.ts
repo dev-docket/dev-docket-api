@@ -74,6 +74,11 @@ export class TasksService {
       );
     } catch (error) {
       this.logger.error(error);
+
+      throw new HttpException(
+        error.message || 'Something went wrong',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
