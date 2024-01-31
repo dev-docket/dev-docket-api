@@ -6,7 +6,7 @@ This is a REST API for a Dev Docket application. Application allows developers t
 
 ## Live
 
-Here you can see online api with docs: https://glorious-mite-leg-warmers.cyclic.app/api
+Here you can see online api with docs: https://dev-docket.onrender.com/api
 
 ## Documentation
 
