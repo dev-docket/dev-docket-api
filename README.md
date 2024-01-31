@@ -17,31 +17,31 @@ Here you will find the documentation of the project. It is currently under const
 ## Installation
 
 ```bash
-$ pnpm install
+$ npm install
 ```
 
 ## Running the app
 
 ```bash
 # development
-$ pnpm run start
+$ npm run start
 
 # watch mode
-$ pnpm run start:dev
+$ npm run start:dev
 
 # production mode
-$ pnpm run start:prod
+$ npm run start:prod
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ pnpm run test
+$ npm run test
 
 # e2e tests
-$ pnpm run test:e2e
+$ npm run test:e2e
 
 # test coverage
-$ pnpm run test:cov
+$ npm run test:cov
 ```

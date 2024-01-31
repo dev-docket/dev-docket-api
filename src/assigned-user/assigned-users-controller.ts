@@ -15,7 +15,7 @@ import AssignedUser from './assigned-user.model';
 import { TaskActivitiesService } from 'src/task-activities/task-activities.service';
 
 @Controller('api/v1/tasks')
-@ApiTags('tasks')
+@ApiTags('Assigned Users')
 export class AssignedUsersController {
   private readonly logger = new Logger(AssignedUsersController.name);
 
