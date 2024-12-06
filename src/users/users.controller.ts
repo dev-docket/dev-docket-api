@@ -1,3 +1,4 @@
+import { ProjectsService } from './../projects/projects.service';
 import {
   Body,
   Controller,
@@ -7,6 +8,7 @@ import {
   HttpStatus,
   Get,
   Query,
+  Param,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CompleteProfileDto } from './dto/complete-profile.dto';
@@ -16,7 +18,10 @@ import { Response } from 'express';
 @Controller('api/v1/users')
 @ApiTags('Users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly projectsService: ProjectsService,
+  ) {}
 
   @Get('/search')
   async getUsersByUsernameAndProject(
@@ -36,6 +41,22 @@ export class UsersController {
     } catch (error) {
       throw new HttpException(
         `Failed to retrieve users: ${error}`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Get(':userId/projects')
+  async getUserProjects(@Param('userId') userId: number, @Res() res: Response) {
+    try {
+      const projects = await this.projectsService.getUserProjects(userId);
+      if (!projects) {
+        return res.status(HttpStatus.NOT_FOUND).send('No projects found');
+      }
+      return res.status(HttpStatus.OK).json(projects);
+    } catch (error) {
+      throw new HttpException(
+        `Failed to retrieve projects: ${error}`,
         HttpStatus.NOT_FOUND,
       );
     }
