@@ -34,11 +34,16 @@ export class ProjectMembersService {
 
     const projectMemberDto = projectMembers.map((projectMember) => {
       const user = users.find((user) => user.id === projectMember.userId);
-      const userWithoutPassword = user.toJSON();
-      delete userWithoutPassword.password;
+      const userWithoutSensitiveInfo = user.toJSON();
+      delete userWithoutSensitiveInfo.password;
+      userWithoutSensitiveInfo.name = userWithoutSensitiveInfo.username;
       return {
         ...projectMember.toJSON(),
-        user: userWithoutPassword,
+        user: {
+          id: userWithoutSensitiveInfo.id,
+          name: userWithoutSensitiveInfo.name,
+          email: userWithoutSensitiveInfo.email,
+        },
       };
     });
 
